@@ -49,7 +49,6 @@ fn main() {
 
     // Some basic defaults; SDL2 is the only driver enabled in the provided
     // driver config by default
-    #[cfg(feature = "drivers")]
     let incl_extra =
         env::var("LVGL_INCLUDE").unwrap_or("/usr/include,/usr/local/include".to_string());
 
@@ -127,9 +126,9 @@ fn main() {
         conf_path
     };
 
+    println!("cargo:rerun-if-env-changed=LVGL_INCLUDE");
     #[cfg(feature = "drivers")]
     {
-        println!("cargo:rerun-if-env-changed=LVGL_INCLUDE");
         println!("cargo:rerun-if-env-changed=LVGL_LINK");
     }
 
@@ -155,7 +154,6 @@ fn main() {
     cfg.include(&timer_shim);
     #[cfg(feature = "drivers")]
     cfg.include(&drivers);
-    #[cfg(feature = "drivers")]
     cfg.includes(incl_extra.split(','));
 
     cflags_extra.clone().for_each(|e| {
@@ -163,6 +161,8 @@ fn main() {
         cfg.define(it.next().unwrap(), it.next().unwrap_or_default());
     });
 
+    let target = env::var("CARGO_BUILD_TARGET").expect("Cargo build scripts always have TARGET");
+    cfg.target(target.as_str());
     cfg.compile("lvgl");
 
     let mut cc_args = vec![
