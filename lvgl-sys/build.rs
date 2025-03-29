@@ -56,7 +56,7 @@ fn main() {
     let cflags_extra = cflags_extra.split(',').filter(|s| !s.is_empty());
 
     #[cfg(feature = "drivers")]
-    let link_extra = env::var("LVGL_LINK").unwrap_or("SDL2".to_string());
+    let link_extra = env::var("LVGL_LINK").unwrap_or("".to_string());
 
     #[cfg(feature = "drivers")]
     let drivers = vendor.join("lv_drivers");
@@ -174,6 +174,8 @@ fn main() {
         "-fvisibility=default",
     ];
 
+    let includes: Vec<String> = incl_extra.split(',').map(|s| format!("-I{s}")).collect();
+
     // Set correct target triple for bindgen when cross-compiling
     let target = env::var("TARGET").expect("Cargo build scripts always have TARGET");
     let host = env::var("HOST").expect("Cargo build scripts always have HOST");
@@ -238,6 +240,7 @@ fn main() {
         .use_core()
         .ctypes_prefix("cty")
         .clang_args(&cc_args)
+        .clang_args(&includes)
         .clang_args(&additional_args)
         .clang_args(cflags_extra.map(|f| format!("-D{f}")))
         .generate()
@@ -249,7 +252,7 @@ fn main() {
 
     #[cfg(feature = "drivers")]
     link_extra.split(',').for_each(|a| {
-        println!("cargo:rustc-link-lib={a}");
+        // println!("cargo:rustc-link-lib={a}");
         //println!("cargo:rustc-link-search=")
     })
 }

@@ -53,6 +53,10 @@ extern "C" {
 #include "lv_drivers/display/ILI9341.h"
 #endif
 
+#if USE_RIVERDI
+#include "lv_drivers/display/riverdi.h"
+#endif
+
 #if USE_FBDEV || USE_BSD_FBDEV
 #include "lv_drivers/display/fbdev.h"
 #endif

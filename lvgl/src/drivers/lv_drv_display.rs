@@ -146,6 +146,30 @@ macro_rules! lv_drv_disp_ili9341 {
 }
 
 #[macro_export]
+macro_rules! lv_drv_disp_riverdi {
+    ($draw_buffer:ident, $hor_res:ident, $ver_res:ident) => {
+        unsafe {
+            lvgl_sys::riverdi_init();
+            $crate::Display::register_raw(
+                $draw_buffer,
+                $hor_res,
+                $ver_res,
+                Some(lvgl_sys::riverdi_flush),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+            )
+        }
+    };
+}
+
+#[macro_export]
 macro_rules! lv_drv_disp_r61581 {
     ($draw_buffer:ident, $hor_res:ident, $ver_res:ident) => {
         unsafe {
